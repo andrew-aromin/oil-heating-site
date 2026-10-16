@@ -1,6 +1,8 @@
 ---
 import { siteConfig } from '../data/siteConfig.js';
+import { withBase } from '../utils/uiLogic.js';
 const currentYear = new Date().getFullYear();
+const base = import.meta.env.BASE_URL;
 ---
 
 <footer class="bg-stone-900 text-stone-300 border-t border-stone-800">
@@ -18,7 +20,7 @@ const currentYear = new Date().getFullYear();
 
       <div class="flex items-center gap-6">
         {siteConfig.navLinks.map((link) => (
-          <a href={link.href} class="text-stone-400 hover:text-amber-200 transition">
+          <a href={withBase(link.href, base)} class="text-stone-400 hover:text-amber-200 transition">
             {link.label}
           </a>
         ))}

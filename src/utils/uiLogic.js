@@ -156,3 +156,19 @@ export async function submitQuoteToWeb3Forms(payload, fetchImpl = fetch) {
     };
   }
 }
+
+/**
+ * Prefixes root-relative paths with the configured Astro base path.
+ * @param {string} path
+ * @param {string} [baseUrl='/']
+ * @returns {string}
+ */
+export function withBase(path, baseUrl = '/') {
+  if (!path || typeof path !== 'string') return '';
+  if (!path.startsWith('/') || path.startsWith('//')) return path;
+
+  const cleanBase = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+  if (!cleanBase) return path;
+
+  return `${cleanBase}${path}`;
+}

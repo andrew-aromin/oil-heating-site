@@ -165,22 +165,39 @@ describe('2. Interactive Carousel, Touch-Swipe & Quote Form Logic (uiLogic.js)',
     assert.equal(failureResult.ok, false);
     assert.equal(failureResult.message, 'Invalid access key');
   });
+
+  it('prefixes root-relative image and navigation paths with baseUrl via withBase()', async () => {
+    const { withBase } = await import('../src/utils/uiLogic.js');
+
+    assert.equal(withBase('/images/img1.jpg', '/oil-heating-site'), '/oil-heating-site/images/img1.jpg');
+    assert.equal(withBase('/images/img1.jpg', '/oil-heating-site/'), '/oil-heating-site/images/img1.jpg');
+    assert.equal(withBase('/about', '/oil-heating-site'), '/oil-heating-site/about');
+    assert.equal(withBase('/#services', '/oil-heating-site'), '/oil-heating-site/#services');
+    assert.equal(withBase('/', '/oil-heating-site'), '/oil-heating-site/');
+    assert.equal(withBase('/images/img1.jpg', '/'), '/images/img1.jpg');
+    assert.equal(withBase('#contact', '/oil-heating-site'), '#contact');
+    assert.equal(withBase('tel:+15552345678', '/oil-heating-site'), 'tel:+15552345678');
+  });
 });
 
 describe('3. Mom & Pop Minimal Mobile-First Astro Components & Assets', () => {
-  it('has warm hearth SVG placeholder graphics in public/images/', () => {
+  it('has family and heating photos in public/images/ and applies withBase() for GitHub Pages base path', () => {
     const expectedFiles = [
-      'public/images/slide-delivery.svg',
-      'public/images/slide-emergency.svg',
-      'public/images/slide-installation.svg',
+      'public/images/img1.jpg',
+      'public/images/img2.jpg',
+      'public/images/img3.jpg',
     ];
     for (const relPath of expectedFiles) {
       const fullPath = path.join(rootDir, relPath);
-      assert.ok(fs.existsSync(fullPath), `Expected placeholder image ${relPath} to exist`);
-      const content = fs.readFileSync(fullPath, 'utf-8');
-      assert.ok(content.includes('<svg'), `${relPath} should be a valid SVG`);
-      assert.ok(content.includes('#451a03') || content.includes('#7f1d1d'), `${relPath} should use warm hearth colors`);
+      assert.ok(fs.existsSync(fullPath), `Expected image ${relPath} to exist`);
+      const stat = fs.statSync(fullPath);
+      assert.ok(stat.size > 0, `${relPath} should not be empty`);
     }
+
+    const hero = fs.readFileSync(path.join(rootDir, 'src/components/HeroCarousel.astro'), 'utf-8');
+    const about = fs.readFileSync(path.join(rootDir, 'src/components/About.astro'), 'utf-8');
+    assert.ok(hero.includes('withBase(slide.image'), 'HeroCarousel should wrap slide.image with withBase');
+    assert.ok(about.includes('withBase(about.image'), 'About should wrap about.image with withBase');
   });
 
   it('implements warm Mom & Pop Navbar with serif brand, 3 links, mobile collapse, and NO oil price badge anywhere', () => {
