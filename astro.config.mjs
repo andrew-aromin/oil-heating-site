@@ -5,10 +5,10 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
+  site: 'https://andrew-aromin.github.io',
+  base: '/oil-heating-site',
+  output: 'static',
   vite: {
-    site: 'https://andrew-aromin.github.io',
-    base: '/oil-heating-site',
-    plugins: [tailwindcss()],
-    output: 'static'
+    plugins: [tailwindcss()]
   }
 });
