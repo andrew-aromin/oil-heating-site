@@ -7,14 +7,19 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
 
-describe('1. Mom & Pop Family Configuration & Minimal Content Model (siteConfig.js)', () => {
-  it('exports family branding, established year, 3 nav links, 3 concise slides, and 3 minimal services without oilPrice', async () => {
+describe('1. Dan McKay Heating & Cooling Configuration & Flyer Content Model (siteConfig.js)', () => {
+  it('exports Dan McKay branding, logo, phone number, flyer wording, 4 nav links, 3 slides, and 3 HVAC/oil burner services', async () => {
     const { siteConfig } = await import('../src/data/siteConfig.js');
 
-    assert.ok(siteConfig.brandName.length > 0, 'Brand name should be defined');
-    assert.ok(siteConfig.familyMotto.includes('Family'), 'Family motto should reflect Mom & Pop family identity');
-    assert.equal(siteConfig.establishedYear, 1978, 'Should include family established year');
-    assert.match(siteConfig.phoneHref, /^tel:\+?\d+/, 'phoneHref should be a valid tel: link');
+    assert.equal(siteConfig.brandName, 'Dan McKay Heating & Cooling', 'Brand name should match base.jpeg');
+    assert.equal(siteConfig.logo, '/images/logo.jpg', 'Logo should reference /images/logo.jpg');
+    assert.equal(siteConfig.phoneDisplay, '774-238-0557', 'Phone display should match base.jpeg');
+    assert.equal(siteConfig.phoneHref, 'tel:+17742380557', 'phoneHref should be a valid tel: link');
+    assert.ok(siteConfig.familyMotto.includes('family'), 'Family motto should reflect treating customers like family');
+    assert.ok(
+      siteConfig.valueProposition.highlight.includes('No service fees - just our hourly rate.'),
+      'Should include the flyer highlight copy'
+    );
     assert.equal(
       siteConfig.web3FormsAccessKey,
       '89911d31-d3c5-4f46-8bdd-68e23d758358',
@@ -39,7 +44,7 @@ describe('1. Mom & Pop Family Configuration & Minimal Content Model (siteConfig.
     assert.ok(siteConfig.about.paragraphs.length >= 2, 'About section should include filler bio paragraphs');
     assert.equal(siteConfig.about.ctaHref, '/#contact', 'About CTA should link back to /#contact');
 
-    // Hero Carousel slides with short neighborly copy
+    // Hero Carousel slides with flyer copy
     assert.equal(siteConfig.heroSlides.length, 3, 'Should have 3 hero carousel slides');
     for (const slide of siteConfig.heroSlides) {
       assert.match(slide.image, /^\/images\/.*\.(svg|jpg)$/, 'Slide should reference an image in /images/');
@@ -48,10 +53,10 @@ describe('1. Mom & Pop Family Configuration & Minimal Content Model (siteConfig.
       assert.ok(slide.ctaHref.startsWith('#contact'), 'Slide primary CTA should scroll to #contact');
     }
 
-    // 3 Minimal Core Services
-    assert.equal(siteConfig.services.length, 3, 'Should include the 3 core heating services');
+    // 3 Core Heating & Cooling Services
+    assert.equal(siteConfig.services.length, 3, 'Should include the 3 core heating & cooling services');
     const serviceIds = siteConfig.services.map((s) => s.id);
-    assert.deepEqual(serviceIds, ['delivery', 'emergency', 'installation']);
+    assert.deepEqual(serviceIds, ['service', 'installation', 'maintenance']);
   });
 });
 
@@ -79,24 +84,24 @@ describe('2. Interactive Carousel, Touch-Swipe & Quote Form Logic (uiLogic.js)',
     const { resolveServiceType } = await import('../src/utils/uiLogic.js');
     const { siteConfig } = await import('../src/data/siteConfig.js');
 
-    assert.equal(resolveServiceType('delivery'), 'delivery');
-    assert.equal(resolveServiceType('emergency'), 'emergency');
+    assert.equal(resolveServiceType('service'), 'service');
     assert.equal(resolveServiceType('installation'), 'installation');
-    assert.equal(resolveServiceType('#contact?service=delivery'), 'delivery');
+    assert.equal(resolveServiceType('maintenance'), 'maintenance');
+    assert.equal(resolveServiceType('#contact?service=service'), 'service');
     assert.equal(resolveServiceType('invalid'), null);
     assert.equal(resolveServiceType(null), null);
 
     assert.deepEqual(
       siteConfig.heroSlides.map((s) => ({ ctaHref: s.ctaHref, serviceType: resolveServiceType(s.serviceType) })),
       [
-        { ctaHref: '#contact', serviceType: 'delivery' },
-        { ctaHref: '#contact', serviceType: 'emergency' },
+        { ctaHref: '#contact', serviceType: 'service' },
+        { ctaHref: '#contact', serviceType: 'service' },
         { ctaHref: '#contact', serviceType: 'installation' },
       ]
     );
   });
 
-  it('validates the quote and oil order form including email address', async () => {
+  it('validates the quote request form including email address', async () => {
     const { validateQuoteRequest } = await import('../src/utils/uiLogic.js');
 
     const invalidResult = validateQuoteRequest({
@@ -112,9 +117,9 @@ describe('2. Interactive Carousel, Touch-Swipe & Quote Form Logic (uiLogic.js)',
     const validResult = validateQuoteRequest({
       name: 'Jane Homeowner',
       email: 'jane@example.com',
-      phone: '(555) 234-5678',
-      zip: '02115',
-      serviceType: 'delivery',
+      phone: '774-238-0557',
+      zip: '02760',
+      serviceType: 'service',
     });
     assert.equal(validResult.valid, true);
     assert.equal(validResult.errors.length, 0);
@@ -127,9 +132,9 @@ describe('2. Interactive Carousel, Touch-Swipe & Quote Form Logic (uiLogic.js)',
       {
         name: '  Jane Homeowner ',
         email: ' jane@example.com ',
-        phone: '(555) 234-5678',
-        zip: '01701',
-        serviceType: 'emergency',
+        phone: '774-238-0557',
+        zip: '02760',
+        serviceType: 'service',
         botcheck: false,
       },
       '89911d31-d3c5-4f46-8bdd-68e23d758358'
@@ -137,13 +142,13 @@ describe('2. Interactive Carousel, Touch-Swipe & Quote Form Logic (uiLogic.js)',
 
     assert.deepEqual(payload, {
       access_key: '89911d31-d3c5-4f46-8bdd-68e23d758358',
-      subject: 'New Quote Request: 24/7 Emergency Burner Repair - Jane Homeowner',
-      from_name: "Dan's Heating Website",
+      subject: 'New Quote Request: Oil Burner or Cooling Service & Repair - Jane Homeowner',
+      from_name: 'Dan McKay Heating & Cooling Website',
       name: 'Jane Homeowner',
       email: 'jane@example.com',
-      phone: '(555) 234-5678',
-      zip: '01701',
-      serviceType: '24/7 Emergency Burner Repair',
+      phone: '774-238-0557',
+      zip: '02760',
+      serviceType: 'Oil Burner or Cooling Service & Repair',
       botcheck: false,
     });
 
@@ -176,13 +181,14 @@ describe('2. Interactive Carousel, Touch-Swipe & Quote Form Logic (uiLogic.js)',
     assert.equal(withBase('/', '/oil-heating-site'), '/oil-heating-site/');
     assert.equal(withBase('/images/img1.jpg', '/'), '/images/img1.jpg');
     assert.equal(withBase('#contact', '/oil-heating-site'), '#contact');
-    assert.equal(withBase('tel:+15552345678', '/oil-heating-site'), 'tel:+15552345678');
+    assert.equal(withBase('tel:+17742380557', '/oil-heating-site'), 'tel:+17742380557');
   });
 });
 
-describe('3. Mom & Pop Minimal Mobile-First Astro Components & Assets', () => {
-  it('has family and heating photos in public/images/ and applies withBase() for GitHub Pages base path', () => {
+describe('3. Dan McKay Heating & Cooling Astro Components & Assets', () => {
+  it('has logo and heating photos in public/images/ and applies withBase() for GitHub Pages base path', () => {
     const expectedFiles = [
+      'public/images/logo.jpg',
       'public/images/img1.jpg',
       'public/images/img2.jpg',
       'public/images/img3.jpg',
@@ -194,18 +200,22 @@ describe('3. Mom & Pop Minimal Mobile-First Astro Components & Assets', () => {
       assert.ok(stat.size > 0, `${relPath} should not be empty`);
     }
 
+    const navbar = fs.readFileSync(path.join(rootDir, 'src/components/Navbar.astro'), 'utf-8');
     const hero = fs.readFileSync(path.join(rootDir, 'src/components/HeroCarousel.astro'), 'utf-8');
     const about = fs.readFileSync(path.join(rootDir, 'src/components/About.astro'), 'utf-8');
+    assert.ok(navbar.includes('withBase(siteConfig.logo'), 'Navbar should wrap siteConfig.logo with withBase');
     assert.ok(hero.includes('withBase(slide.image'), 'HeroCarousel should wrap slide.image with withBase');
     assert.ok(about.includes('withBase(about.image'), 'About should wrap about.image with withBase');
   });
 
-  it('implements warm Mom & Pop Navbar with serif brand, 3 links, mobile collapse, and NO oil price badge anywhere', () => {
+  it('implements black Navbar with logo, cyan/orange accents, mobile collapse, and NO oil price badge anywhere', () => {
     const navbarPath = path.join(rootDir, 'src/components/Navbar.astro');
     const content = fs.readFileSync(navbarPath, 'utf-8');
 
     assert.ok(content.includes('sticky top-0'), 'Navbar should be sticky at top');
-    assert.ok(content.includes('font-serif'), 'Navbar should use warm serif typography for family brand');
+    assert.ok(content.includes('bg-black'), 'Navbar should use black background matching base.jpeg');
+    assert.ok(content.includes('#1ba1e2'), 'Navbar should include cyan accent color');
+    assert.ok(content.includes('#e06336'), 'Navbar should include orange CTA color');
     assert.ok(content.includes('mobile-menu-toggle'), 'Navbar should include mobile hamburger toggle');
     assert.ok(content.includes('navbar-collapse'), 'Navbar should include collapsible mobile drawer');
     assert.ok(!content.includes('oilPrice') && !content.includes('/gal'), 'Navbar should not contain any oil price badge');
@@ -216,22 +226,25 @@ describe('3. Mom & Pop Minimal Mobile-First Astro Components & Assets', () => {
     assert.ok(!layout.includes('oilPrice') && !layout.includes('/gal'), 'Layout should not contain oil price');
   });
 
-  it('implements centered minimal HeroCarousel Jumbotron with serif headline, 1 CTA per slide, and indicator dots', () => {
+  it('implements centered HeroCarousel with cyan script comfortable, orange CTA, and cyan indicator dots', () => {
     const heroPath = path.join(rootDir, 'src/components/HeroCarousel.astro');
     const content = fs.readFileSync(heroPath, 'utf-8');
 
     assert.ok(content.includes('data-carousel'), 'HeroCarousel should have carousel container attribute');
     assert.ok(content.includes('text-center'), 'HeroCarousel overlay should be centered');
-    assert.ok(content.includes('font-serif'), 'HeroCarousel headline should use warm serif font');
-    assert.ok(content.includes('bg-red-800'), 'HeroCarousel CTA should use Heritage Barn Red');
+    assert.ok(content.includes('font-script'), 'HeroCarousel headline should use script font for comfortable');
+    assert.ok(content.includes('bg-[#e06336]'), 'HeroCarousel CTA should use flyer orange (#e06336)');
+    assert.ok(content.includes('bg-[#1ba1e2]'), 'HeroCarousel active indicator should use flyer cyan (#1ba1e2)');
     assert.ok(content.includes('data-carousel-indicator'), 'HeroCarousel should render bottom indicator dots');
     assert.ok(content.includes('hidden md:flex'), 'Prev/Next arrow buttons should be hidden on mobile and flex on md+');
     assert.ok(!content.includes('secondaryLabel'), 'HeroCarousel should only have 1 primary CTA per slide');
   });
 
-  it('implements minimal Services, centered single-column ContactQuote with email field, and compact single-bar Footer', () => {
+  it('implements Services with orange banner & flyer wording, ContactQuote with email field, and black Footer', () => {
     const services = fs.readFileSync(path.join(rootDir, 'src/components/Services.astro'), 'utf-8');
     assert.ok(services.includes('grid-cols-1') && services.includes('md:grid-cols-3'), 'Services should stack 1-col on mobile and 3-col on md+');
+    assert.ok(services.includes('bg-[#e06336]'), 'Services should include the flyer orange service strip');
+    assert.ok(services.includes('family.') && services.includes('comfort'), 'Services should include the bottom flyer tagline');
     assert.ok(!services.includes('<ul'), 'Minimal Services cards should not contain cluttered bullet lists');
 
     const contact = fs.readFileSync(path.join(rootDir, 'src/components/ContactQuote.astro'), 'utf-8');
@@ -249,6 +262,7 @@ describe('3. Mom & Pop Minimal Mobile-First Astro Components & Assets', () => {
       footer.includes('flex-col') && footer.includes('md:flex-row'),
       'Footer should stack cleanly on mobile and form a single compact bar on desktop'
     );
+    assert.ok(footer.includes('bg-black'), 'Footer should use black background');
   });
 
   it('wires index.astro without About and renders About on its own /about page (about.astro)', () => {

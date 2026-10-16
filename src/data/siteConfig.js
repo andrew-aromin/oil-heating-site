@@ -1,10 +1,10 @@
 export const siteConfig = {
-  brandName: 'Dan\'s Heating and Oil',
-  shortName: 'Dan\'s Heating',
-  familyMotto: 'Family-Owned & Operated Since 1978',
-  establishedYear: 1978,
-  phoneDisplay: '(555) 234-5678',
-  phoneHref: 'tel:+15552345678',
+  brandName: 'Dan McKay Heating & Cooling',
+  shortName: 'Dan McKay',
+  logo: '/images/logo.jpg',
+  familyMotto: 'As a small business, we treat our customers like family. Your comfort matters to us!',
+  phoneDisplay: '774-238-0557',
+  phoneHref: 'tel:+17742380557',
   web3FormsAccessKey: '89911d31-d3c5-4f46-8bdd-68e23d758358',
 
   navLinks: [
@@ -14,48 +14,55 @@ export const siteConfig = {
     { label: 'Contact', href: '/#contact' },
   ],
 
+  valueProposition: {
+    lead: 'Honest Service. Fair Pricing. Reliable Comfort for our oil heat and cooling customers. As a new customer, Dan and his staff are here to help!',
+    highlight: 'No service fees - just our hourly rate.',
+    body: 'We understand homeownership can come with unexpected expenses. That is why we provide dependable service, clear and honest communication without adding unnecessary costs.',
+    banner: 'Heating & Air Conditioning Installation • Service & Maintenance',
+  },
+
   about: {
-    eyebrow: 'Our Family Story • Est. 1978',
-    heading: "Meet the Family Behind Dan's Heating",
+    eyebrow: 'Dan McKay Heating & Cooling',
+    heading: 'Meet Dan McKay and His Staff',
     image: '/images/img1.jpg',
-    imageAlt: "Dan's Heating family and their dogs outside their home",
-    imageCaption: 'The family and our four-legged dispatchers at home.',
+    imageAlt: 'Dan McKay Heating & Cooling family and dogs outside their home',
+    imageCaption: 'Treating our oil heat and cooling customers like family.',
     paragraphs: [
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
       'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
       'Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida.',
     ],
-    ctaLabel: 'Get in touch with our family',
+    ctaLabel: 'Contact Dan and his staff',
     ctaHref: '/#contact',
   },
 
   heroSlides: [
     {
-      id: 'slide-delivery',
-      headline: 'From Our Family to Yours Since 1978',
-      subheadline: 'Dependable hometown heating oil delivery with a neighborly handshake.',
+      id: 'slide-comfort',
+      headline: 'Keeping Your Home Comfortable Year-Round',
+      subheadline: 'Honest Service. Fair Pricing. Reliable Comfort for our oil heat and cooling customers.',
       image: '/images/img1.jpg',
-      imageAlt: 'Family heating oil delivery truck placeholder photo',
-      ctaLabel: 'Order Heating Oil',
+      imageAlt: 'Keeping your home comfortable year-round with Dan McKay Heating & Cooling',
+      ctaLabel: 'Schedule Service',
       ctaHref: '#contact',
-      serviceType: 'delivery',
+      serviceType: 'service',
     },
     {
-      id: 'slide-emergency',
-      headline: 'We Answer Our Own Phones, 24/7',
-      subheadline: 'When your heat goes out on a freezing night, our family is on the way.',
+      id: 'slide-pricing',
+      headline: 'No Service Fees - Just Our Hourly Rate',
+      subheadline: 'Dependable service, clear and honest communication without adding unnecessary costs.',
       image: '/images/img2.jpg',
-      imageAlt: '24/7 family burner service placeholder photo',
-      ctaLabel: 'Request Burner Service',
+      imageAlt: 'Honest oil burner and cooling service technician',
+      ctaLabel: 'Schedule Maintenance',
       ctaHref: '#contact',
-      serviceType: 'emergency',
+      serviceType: 'maintenance',
     },
     {
       id: 'slide-installation',
-      headline: 'Honest Work & Fair Hometown Prices',
-      subheadline: 'Quality boiler care, oil tank replacements, and tune-ups you can trust.',
+      headline: 'Heating & Air Conditioning Installation',
+      subheadline: 'Oil burners, installations, repairs, heat pumps, and mini-splits from a team that cares.',
       image: '/images/img3.jpg',
-      imageAlt: 'Boiler and oil tank installation placeholder photo',
+      imageAlt: 'Heating and air conditioning installation and maintenance',
       ctaLabel: 'Ask for an Estimate',
       ctaHref: '#contact',
       serviceType: 'installation',
@@ -64,19 +71,20 @@ export const siteConfig = {
 
   services: [
     {
-      id: 'delivery',
-      title: 'Hometown Oil Delivery',
-      description: 'Worry-free automatic refills or quick will-call delivery whenever your tank gets low.',
-    },
-    {
-      id: 'emergency',
-      title: '24/7 Family Burner Service',
-      description: 'No answering services—call any hour and a Miller family technician will get your heat back on.',
+      id: 'service',
+      title: 'Oil Burner & Cooling Repair',
+      description: 'No service fees - just our hourly rate. Dependable diagnostics and honest repairs for oil burners and AC systems.',
     },
     {
       id: 'installation',
-      title: 'Boilers, Tanks & Tune-Ups',
-      description: 'Honest advice and tidy installations for boilers, furnaces, and replacement oil tanks.',
+      title: 'Heating & AC Installation',
+      description: 'Expert installation of oil heating systems, central air conditioning, high-efficiency heat pumps, and ductless mini-splits.',
+    },
+    {
+      id: 'maintenance',
+      title: 'Service & Maintenance',
+      description: 'Annual tune-ups and preventive care with clear, honest communication to keep your home comfortable year-round.',
     },
   ],
 };
+

@@ -11,8 +11,8 @@ interface Props {
 }
 
 const {
-  title = `${siteConfig.brandName} | ${siteConfig.familyMotto}`,
-  description = `${siteConfig.brandName} — ${siteConfig.familyMotto}. Hometown heating oil delivery and 24/7 family burner service.`,
+  title = `${siteConfig.brandName} | Keeping Your Home Comfortable Year-Round`,
+  description = `${siteConfig.brandName} — ${siteConfig.valueProposition.lead} ${siteConfig.valueProposition.highlight}`,
 } = Astro.props;
 const base = import.meta.env.BASE_URL;
 ---
@@ -28,7 +28,7 @@ const base = import.meta.env.BASE_URL;
     <meta name="description" content={description} />
     <title>{title}</title>
   </head>
-  <body class="min-h-screen flex flex-col bg-[#faf7f2] text-stone-900">
+  <body class="min-h-screen flex flex-col bg-white text-neutral-900">
     <Navbar />
     <main class="flex-1">
       <slot />

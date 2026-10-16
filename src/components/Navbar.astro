@@ -4,29 +4,39 @@ import { withBase } from '../utils/uiLogic.js';
 const base = import.meta.env.BASE_URL;
 ---
 
-<header class="sticky top-0 z-50 w-full border-b border-stone-200 bg-[#faf7f2]/95 text-stone-900 backdrop-blur-md">
+<header class="sticky top-0 z-50 w-full border-b border-neutral-800 bg-black/95 text-white backdrop-blur-md">
   <nav class="container mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main Navigation">
-    <div class="flex h-16 items-center justify-between gap-4">
-      <!-- Mom & Pop Family Brand Name -->
-      <a href={withBase('/', base)} class="flex items-center gap-2.5 focus:outline-none">
-        <span class="inline-flex items-center rounded-md bg-red-800 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-amber-50">
-          Est. {siteConfig.establishedYear}
-        </span>
-        <span class="font-serif text-lg sm:text-xl font-bold tracking-tight text-stone-900">
-          {siteConfig.brandName}
-        </span>
+    <div class="flex h-20 items-center justify-between gap-4">
+      <!-- Dan McKay Logo & Brand Name -->
+      <a href={withBase('/', base)} class="flex items-center gap-3 focus:outline-none">
+        <img
+          src={withBase(siteConfig.logo, base)}
+          alt={`${siteConfig.brandName} logo`}
+          class="h-12 w-12 rounded-full object-cover shrink-0"
+        />
+        <div class="flex flex-col leading-tight">
+          <span class="font-sans text-base sm:text-lg font-extrabold uppercase tracking-wider text-white">
+            {siteConfig.brandName}
+          </span>
+        </div>
       </a>
 
-      <!-- Desktop 3 Nav Links -->
+      <!-- Desktop Nav Links -->
       <div class="hidden md:flex md:items-center md:gap-8">
         {siteConfig.navLinks.map((link) => (
           <a
             href={withBase(link.href, base)}
-            class="text-sm font-medium text-stone-700 hover:text-red-800 transition-colors"
+            class="text-sm font-semibold uppercase tracking-wide text-neutral-200 hover:text-[#1ba1e2] transition-colors"
           >
             {link.label}
           </a>
         ))}
+        <a
+          href={siteConfig.phoneHref}
+          class="inline-flex items-center rounded-full bg-[#e06336] px-4 py-2 text-xs font-bold uppercase tracking-wider text-white hover:bg-[#c95328] transition"
+        >
+          Call {siteConfig.phoneDisplay}
+        </a>
       </div>
 
       <!-- Mobile Hamburger Toggle -->
@@ -34,7 +44,7 @@ const base = import.meta.env.BASE_URL;
         <button
           id="mobile-menu-toggle"
           type="button"
-          class="inline-flex md:hidden h-9 w-9 items-center justify-center rounded-lg border border-stone-300 bg-white text-stone-700 hover:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-red-800"
+          class="inline-flex md:hidden h-10 w-10 items-center justify-center rounded-lg border border-neutral-700 bg-neutral-900 text-neutral-200 hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-[#1ba1e2]"
           aria-controls="navbar-collapse"
           aria-expanded="false"
           aria-label="Toggle navigation menu"
@@ -50,17 +60,23 @@ const base = import.meta.env.BASE_URL;
     </div>
 
     <!-- Mobile Collapsible Drawer (< md) -->
-    <div id="navbar-collapse" class="hidden md:hidden border-t border-stone-200 py-3">
+    <div id="navbar-collapse" class="hidden md:hidden border-t border-neutral-800 py-3">
       <div class="flex flex-col space-y-1">
         {siteConfig.navLinks.map((link) => (
           <a
             href={withBase(link.href, base)}
             data-mobile-nav-link
-            class="rounded-lg px-3 py-2 text-base font-medium text-stone-800 hover:bg-stone-200/60 hover:text-red-800 transition"
+            class="rounded-lg px-3 py-2 text-base font-medium text-neutral-100 hover:bg-neutral-900 hover:text-[#1ba1e2] transition"
           >
             {link.label}
           </a>
         ))}
+        <a
+          href={siteConfig.phoneHref}
+          class="mt-2 inline-flex items-center justify-center rounded-lg bg-[#e06336] px-4 py-2.5 text-sm font-bold uppercase tracking-wider text-white hover:bg-[#c95328] transition"
+        >
+          Call {siteConfig.phoneDisplay}
+        </a>
       </div>
     </div>
   </nav>

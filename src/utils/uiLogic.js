@@ -77,26 +77,26 @@ export function validateQuoteRequest(input) {
 }
 
 const SERVICE_LABELS = {
-  delivery: 'Heating Oil Delivery',
-  emergency: '24/7 Emergency Burner Repair',
-  installation: 'Boiler, Tank, or Tune-Up Estimate',
+  service: 'Oil Burner or Cooling Service & Repair',
+  installation: 'Heating & Air Conditioning Installation',
+  maintenance: 'Routine Service & Maintenance',
 };
 
 /**
- * Resolves a valid service category ('delivery' | 'emergency' | 'installation')
+ * Resolves a valid service category ('service' | 'installation' | 'maintenance')
  * from a data-service-link attribute or href string.
  * @param {string | null | undefined} value
- * @returns {'delivery' | 'emergency' | 'installation' | null}
+ * @returns {'service' | 'installation' | 'maintenance' | null}
  */
 export function resolveServiceType(value) {
   if (!value || typeof value !== 'string') return null;
   const trimmed = value.trim().toLowerCase();
   if (Object.prototype.hasOwnProperty.call(SERVICE_LABELS, trimmed)) {
-    return /** @type {'delivery' | 'emergency' | 'installation'} */ (trimmed);
+    return /** @type {'service' | 'installation' | 'maintenance'} */ (trimmed);
   }
   const match = trimmed.match(/service=([a-z]+)/i);
   if (match && Object.prototype.hasOwnProperty.call(SERVICE_LABELS, match[1])) {
-    return /** @type {'delivery' | 'emergency' | 'installation'} */ (match[1]);
+    return /** @type {'service' | 'installation' | 'maintenance'} */ (match[1]);
   }
   return null;
 }
@@ -114,7 +114,7 @@ export function buildWeb3FormsPayload(input, accessKey) {
   return {
     access_key: accessKey,
     subject: `New Quote Request: ${serviceLabel} - ${cleanName}`,
-    from_name: "Dan's Heating Website",
+    from_name: 'Dan McKay Heating & Cooling Website',
     name: cleanName,
     email: (input?.email || '').trim(),
     phone: (input?.phone || '').trim(),
