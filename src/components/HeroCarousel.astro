@@ -1,0 +1,212 @@
+---
+import { siteConfig } from '../data/siteConfig.js';
+---
+
+<section
+  id="home"
+  data-carousel
+  class="relative w-full overflow-hidden bg-stone-900 text-amber-50"
+  aria-roledescription="carousel"
+  aria-label="Family Heating Highlights"
+>
+  <div class="relative min-h-[440px] sm:min-h-[500px] lg:min-h-[540px] w-full flex items-center justify-center">
+    {siteConfig.heroSlides.map((slide, index) => (
+      <div
+        data-carousel-slide={index}
+        role="group"
+        aria-roledescription="slide"
+        aria-label={`${index + 1} of ${siteConfig.heroSlides.length}: ${slide.headline}`}
+        aria-hidden={index === 0 ? 'false' : 'true'}
+        class={`inset-0 w-full transition-opacity duration-700 ease-in-out ${
+          index === 0 ? 'relative opacity-100 z-10' : 'absolute opacity-0 pointer-events-none z-0'
+        }`}
+      >
+        <!-- Background Photo Placeholder -->
+        <div class="absolute inset-0 z-0">
+          <img
+            src={slide.image}
+            alt={slide.imageAlt}
+            class="h-full w-full object-cover object-center"
+            loading={index === 0 ? 'eager' : 'lazy'}
+          />
+          <div class="absolute inset-0 bg-stone-950/60"></div>
+        </div>
+
+        <!-- Minimal Centered Jumbotron Overlay -->
+        <div class="relative z-10 container mx-auto px-4 sm:px-6 py-20 sm:py-24 text-center">
+          <div class="max-w-2xl mx-auto">
+            <p class="text-xs sm:text-sm font-semibold uppercase tracking-widest text-amber-300">
+              {siteConfig.familyMotto}
+            </p>
+
+            <h1 class="mt-3 font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-amber-50 leading-tight">
+              {slide.headline}
+            </h1>
+
+            <p class="mt-4 text-base sm:text-lg text-stone-200 leading-relaxed">
+              {slide.subheadline}
+            </p>
+
+            <div class="mt-8">
+              <a
+                href={slide.ctaHref}
+                data-service-link={slide.serviceType}
+                class="inline-flex items-center justify-center rounded-full bg-red-800 px-8 py-3.5 text-base font-semibold text-amber-50 shadow-md hover:bg-red-700 transition"
+              >
+                {slide.ctaLabel}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <!-- Prev / Next Arrows (Hidden on mobile, visible on md+) -->
+  <button
+    type="button"
+    data-carousel-prev
+    class="hidden md:flex absolute left-4 lg:left-6 top-1/2 -translate-y-1/2 z-20 h-10 w-10 items-center justify-center rounded-full border border-stone-600/80 bg-stone-900/70 text-amber-50 hover:bg-red-800 hover:border-red-700 transition"
+    aria-label="Previous slide"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>
+  </button>
+
+  <button
+    type="button"
+    data-carousel-next
+    class="hidden md:flex absolute right-4 lg:right-6 top-1/2 -translate-y-1/2 z-20 h-10 w-10 items-center justify-center rounded-full border border-stone-600/80 bg-stone-900/70 text-amber-50 hover:bg-red-800 hover:border-red-700 transition"
+    aria-label="Next slide"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+    </svg>
+  </button>
+
+  <!-- Minimal Centered Indicator Dots -->
+  <div class="absolute bottom-5 inset-x-0 z-20 flex justify-center gap-2.5" role="tablist" aria-label="Choose slide">
+    {siteConfig.heroSlides.map((slide, index) => (
+      <button
+        type="button"
+        role="tab"
+        data-carousel-indicator={index}
+        aria-label={`Slide ${index + 1}: ${slide.headline}`}
+        aria-selected={index === 0 ? 'true' : 'false'}
+        class={`h-2.5 rounded-full transition-all duration-300 ${
+          index === 0 ? 'w-7 bg-amber-400' : 'w-2.5 bg-stone-400/60 hover:bg-stone-300'
+        }`}
+      ></button>
+    ))}
+  </div>
+</section>
+
+<script>
+  import { getNextSlideIndex, getPrevSlideIndex, detectSwipeDirection } from '../utils/uiLogic.js';
+
+  const carousel = document.querySelector('[data-carousel]');
+  const slides = Array.from(document.querySelectorAll('[data-carousel-slide]'));
+  const indicators = Array.from(document.querySelectorAll('[data-carousel-indicator]'));
+  const prevBtn = document.querySelector('[data-carousel-prev]');
+  const nextBtn = document.querySelector('[data-carousel-next]');
+
+  let currentIndex = 0;
+  let autoPlayTimer: ReturnType<typeof setInterval> | null = null;
+  let touchStartX = 0;
+
+  function showSlide(targetIndex: number) {
+    if (!slides.length) return;
+    currentIndex = targetIndex;
+
+    slides.forEach((slide, idx) => {
+      const isActive = idx === currentIndex;
+      slide.setAttribute('aria-hidden', String(!isActive));
+      slide.classList.toggle('relative', isActive);
+      slide.classList.toggle('opacity-100', isActive);
+      slide.classList.toggle('z-10', isActive);
+      slide.classList.toggle('absolute', !isActive);
+      slide.classList.toggle('opacity-0', !isActive);
+      slide.classList.toggle('pointer-events-none', !isActive);
+      slide.classList.toggle('z-0', !isActive);
+    });
+
+    indicators.forEach((dot, idx) => {
+      const isActive = idx === currentIndex;
+      dot.setAttribute('aria-selected', String(isActive));
+      dot.classList.toggle('w-7', isActive);
+      dot.classList.toggle('bg-amber-400', isActive);
+      dot.classList.toggle('w-2.5', !isActive);
+      dot.classList.toggle('bg-stone-400/60', !isActive);
+    });
+  }
+
+  function nextSlide() {
+    showSlide(getNextSlideIndex(currentIndex, slides.length));
+  }
+
+  function prevSlide() {
+    showSlide(getPrevSlideIndex(currentIndex, slides.length));
+  }
+
+  function startAutoPlay() {
+    stopAutoPlay();
+    autoPlayTimer = setInterval(nextSlide, 5500);
+  }
+
+  function stopAutoPlay() {
+    if (autoPlayTimer) {
+      clearInterval(autoPlayTimer);
+      autoPlayTimer = null;
+    }
+  }
+
+  prevBtn?.addEventListener('click', () => {
+    prevSlide();
+    startAutoPlay();
+  });
+
+  nextBtn?.addEventListener('click', () => {
+    nextSlide();
+    startAutoPlay();
+  });
+
+  indicators.forEach((dot, idx) => {
+    dot.addEventListener('click', () => {
+      showSlide(idx);
+      startAutoPlay();
+    });
+  });
+
+  carousel?.addEventListener('mouseenter', stopAutoPlay);
+  carousel?.addEventListener('mouseleave', startAutoPlay);
+
+  carousel?.addEventListener(
+    'touchstart',
+    (e) => {
+      const touchEvent = e as TouchEvent;
+      if (touchEvent.changedTouches.length > 0) {
+        touchStartX = touchEvent.changedTouches[0].screenX;
+      }
+      stopAutoPlay();
+    },
+    { passive: true }
+  );
+
+  carousel?.addEventListener(
+    'touchend',
+    (e) => {
+      const touchEvent = e as TouchEvent;
+      if (touchEvent.changedTouches.length > 0) {
+        const touchEndX = touchEvent.changedTouches[0].screenX;
+        const direction = detectSwipeDirection(touchStartX, touchEndX, 40);
+        if (direction === 'next') nextSlide();
+        if (direction === 'prev') prevSlide();
+      }
+      startAutoPlay();
+    },
+    { passive: true }
+  );
+
+  startAutoPlay();
+</script>
