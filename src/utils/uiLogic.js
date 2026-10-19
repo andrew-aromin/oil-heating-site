@@ -36,44 +36,127 @@ export function detectSwipeDirection(startX, endX, threshold = 40) {
 }
 
 /**
+ * Formats a phone number string into ###-###-#### format.
+ * @param {string} value
+ * @returns {string}
+ */
+export function formatPhoneNumber(value) {
+  const digits = (value || '').replace(/\D/g, '').slice(0, 10);
+  if (digits.length <= 3) {
+    return digits;
+  }
+  if (digits.length <= 6) {
+    return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+  }
+  return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
+}
+
+/**
+ * Sanitizes a ZIP code by stripping non-numeric characters and restricting to 5 digits.
+ * @param {string} value
+ * @returns {string}
+ */
+export function sanitizeZip(value) {
+  return (value || '').replace(/\D/g, '').slice(0, 5);
+}
+
+/**
+ * Validates a single form field by name.
+ * @param {'name' | 'email' | 'phone' | 'zip' | 'serviceType'} fieldName
+ * @param {string | undefined | null} value
+ * @returns {string | null} Error message or null if valid
+ */
+export function validateField(fieldName, value) {
+  const trimmed = (value || '').trim();
+
+  switch (fieldName) {
+    case 'name':
+      if (trimmed.length < 2) {
+        return 'Please enter your full name.';
+      }
+      return null;
+
+    case 'email':
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+        return 'Please enter a valid email address.';
+      }
+      return null;
+
+    case 'phone': {
+      const digitsOnly = trimmed.replace(/\D/g, '');
+      if (digitsOnly.length < 10) {
+        return 'Please enter a valid 10-digit phone number.';
+      }
+      return null;
+    }
+
+    case 'zip':
+      if (!/^\d{5}(-\d{4})?$/.test(trimmed)) {
+        return 'Please enter a valid 5-digit ZIP code.';
+      }
+      return null;
+
+    case 'serviceType':
+      if (trimmed.length === 0) {
+        return 'Please select a service type.';
+      }
+      return null;
+
+    default:
+      return null;
+  }
+}
+
+/**
  * Validates customer quote / oil order form inputs.
  * @param {{ name?: string; email?: string; phone?: string; zip?: string; serviceType?: string; gallons?: number }} input
- * @returns {{ valid: boolean; errors: string[] }}
+ * @returns {{ valid: boolean; errors: string[]; fieldErrors: Record<string, string> }}
  */
 export function validateQuoteRequest(input) {
-  const errors = [];
+  /** @type {Record<string, string>} */
+  const fieldErrors = {};
 
-  if (!input || !input.name || input.name.trim().length < 2) {
-    errors.push('Please enter your full name.');
-  }
+  const nameError = validateField('name', input?.name);
+  if (nameError) fieldErrors.name = nameError;
 
-  const emailClean = (input?.email || '').trim();
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailClean)) {
-    errors.push('Please enter a valid email address.');
-  }
+  const emailError = validateField('email', input?.email);
+  if (emailError) fieldErrors.email = emailError;
 
-  const digitsOnly = (input?.phone || '').replace(/\D/g, '');
-  if (digitsOnly.length < 10) {
-    errors.push('Please enter a valid 10-digit phone number.');
-  }
+  const phoneError = validateField('phone', input?.phone);
+  if (phoneError) fieldErrors.phone = phoneError;
 
-  const zipClean = (input?.zip || '').trim();
-  if (!/^\d{5}(-\d{4})?$/.test(zipClean)) {
-    errors.push('Please enter a valid 5-digit ZIP code.');
-  }
+  const zipError = validateField('zip', input?.zip);
+  if (zipError) fieldErrors.zip = zipError;
 
-  if (!input?.serviceType || input.serviceType.trim().length === 0) {
-    errors.push('Please select a service type.');
-  }
+  const serviceTypeError = validateField('serviceType', input?.serviceType);
+  if (serviceTypeError) fieldErrors.serviceType = serviceTypeError;
+
+  const errors = Object.values(fieldErrors);
 
   if (input?.serviceType === 'delivery' && typeof input.gallons === 'number' && input.gallons < 100) {
-    errors.push('Minimum heating oil delivery order is 100 gallons.');
+    const deliveryErr = 'Minimum heating oil delivery order is 100 gallons.';
+    errors.push(deliveryErr);
+    fieldErrors.gallons = deliveryErr;
   }
 
   return {
     valid: errors.length === 0,
     errors,
+    fieldErrors,
   };
+}
+
+/**
+ * Checks whether all required quote form fields are filled and valid.
+ * @param {{ name?: string; email?: string; phone?: string; zip?: string; serviceType?: string }} input
+ * @returns {boolean}
+ */
+export function isQuoteFormCompleteAndValid(input) {
+  if (!input) return false;
+  const { name, email, phone, zip, serviceType } = input;
+  if (!name || !email || !phone || !zip || !serviceType) return false;
+  if (!name.trim() || !email.trim() || !phone.trim() || !zip.trim() || !serviceType.trim()) return false;
+  return validateQuoteRequest(input).valid;
 }
 
 const SERVICE_LABELS = {

@@ -49,9 +49,12 @@ import { siteConfig } from '../data/siteConfig.js';
               id="customer-name"
               name="name"
               required
+              aria-describedby="customer-name-error"
+              aria-invalid="false"
               placeholder="Jane Homeowner"
-              class="mt-1 block w-full rounded-xl border border-neutral-300 bg-white px-3.5 py-2.5 text-sm text-neutral-900 focus:border-[#1ba1e2] focus:outline-none focus:ring-2 focus:ring-[#1ba1e2]/20"
+              class="mt-1 block w-full rounded-xl border border-neutral-300 bg-white px-3.5 py-2.5 text-sm text-neutral-900 focus:border-[#1ba1e2] focus:outline-none focus:ring-2 focus:ring-[#1ba1e2]/20 transition"
             />
+            <p id="customer-name-error" class="mt-1.5 hidden text-xs font-medium text-red-600" role="alert"></p>
           </div>
 
           <div>
@@ -64,9 +67,12 @@ import { siteConfig } from '../data/siteConfig.js';
               name="email"
               required
               autocomplete="email"
+              aria-describedby="customer-email-error"
+              aria-invalid="false"
               placeholder="jane@example.com"
-              class="mt-1 block w-full rounded-xl border border-neutral-300 bg-white px-3.5 py-2.5 text-sm text-neutral-900 focus:border-[#1ba1e2] focus:outline-none focus:ring-2 focus:ring-[#1ba1e2]/20"
+              class="mt-1 block w-full rounded-xl border border-neutral-300 bg-white px-3.5 py-2.5 text-sm text-neutral-900 focus:border-[#1ba1e2] focus:outline-none focus:ring-2 focus:ring-[#1ba1e2]/20 transition"
             />
+            <p id="customer-email-error" class="mt-1.5 hidden text-xs font-medium text-red-600" role="alert"></p>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -79,9 +85,13 @@ import { siteConfig } from '../data/siteConfig.js';
                 id="customer-phone"
                 name="phone"
                 required
+                maxlength="12"
+                aria-describedby="customer-phone-error"
+                aria-invalid="false"
                 placeholder="774-238-0557"
-                class="mt-1 block w-full rounded-xl border border-neutral-300 bg-white px-3.5 py-2.5 text-sm text-neutral-900 focus:border-[#1ba1e2] focus:outline-none focus:ring-2 focus:ring-[#1ba1e2]/20"
+                class="mt-1 block w-full rounded-xl border border-neutral-300 bg-white px-3.5 py-2.5 text-sm text-neutral-900 focus:border-[#1ba1e2] focus:outline-none focus:ring-2 focus:ring-[#1ba1e2]/20 transition"
               />
+              <p id="customer-phone-error" class="mt-1.5 hidden text-xs font-medium text-red-600" role="alert"></p>
             </div>
 
             <div>
@@ -93,9 +103,14 @@ import { siteConfig } from '../data/siteConfig.js';
                 id="customer-zip"
                 name="zip"
                 required
+                maxlength="5"
+                inputmode="numeric"
+                aria-describedby="customer-zip-error"
+                aria-invalid="false"
                 placeholder="02760"
-                class="mt-1 block w-full rounded-xl border border-neutral-300 bg-white px-3.5 py-2.5 text-sm text-neutral-900 focus:border-[#1ba1e2] focus:outline-none focus:ring-2 focus:ring-[#1ba1e2]/20"
+                class="mt-1 block w-full rounded-xl border border-neutral-300 bg-white px-3.5 py-2.5 text-sm text-neutral-900 focus:border-[#1ba1e2] focus:outline-none focus:ring-2 focus:ring-[#1ba1e2]/20 transition"
               />
+              <p id="customer-zip-error" class="mt-1.5 hidden text-xs font-medium text-red-600" role="alert"></p>
             </div>
           </div>
 
@@ -107,7 +122,9 @@ import { siteConfig } from '../data/siteConfig.js';
               id="service-type"
               name="serviceType"
               required
-              class="mt-1 block w-full rounded-xl border border-neutral-300 bg-white px-3.5 py-2.5 text-sm text-neutral-900 focus:border-[#1ba1e2] focus:outline-none focus:ring-2 focus:ring-[#1ba1e2]/20"
+              aria-describedby="service-type-error"
+              aria-invalid="false"
+              class="mt-1 block w-full rounded-xl border border-neutral-300 bg-white px-3.5 py-2.5 text-sm text-neutral-900 focus:border-[#1ba1e2] focus:outline-none focus:ring-2 focus:ring-[#1ba1e2]/20 transition"
             >
               <option value="service">
                 Oil Burner or Cooling Service & Repair
@@ -119,11 +136,13 @@ import { siteConfig } from '../data/siteConfig.js';
                 Routine Service & Maintenance
               </option>
             </select>
+            <p id="service-type-error" class="mt-1.5 hidden text-xs font-medium text-red-600" role="alert"></p>
           </div>
 
           <button
             type="submit"
             id="quote-submit-btn"
+            disabled
             class="w-full inline-flex items-center justify-center rounded-full bg-[#e06336] px-6 py-3.5 text-base font-bold uppercase tracking-wide text-white shadow-sm hover:bg-[#c95328] transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
           >
             Send Request to Dan & Staff
@@ -142,6 +161,10 @@ import { siteConfig } from '../data/siteConfig.js';
   import {
     resolveServiceType,
     validateQuoteRequest,
+    validateField,
+    formatPhoneNumber,
+    sanitizeZip,
+    isQuoteFormCompleteAndValid,
     buildWeb3FormsPayload,
     submitQuoteToWeb3Forms,
   } from '../utils/uiLogic.js';
@@ -153,6 +176,121 @@ import { siteConfig } from '../data/siteConfig.js';
   const serviceSelect = document.getElementById('service-type') as HTMLSelectElement | null;
   const submitBtn = document.getElementById('quote-submit-btn') as HTMLButtonElement | null;
 
+  const nameInput = document.getElementById('customer-name') as HTMLInputElement | null;
+  const emailInput = document.getElementById('customer-email') as HTMLInputElement | null;
+  const phoneInput = document.getElementById('customer-phone') as HTMLInputElement | null;
+  const zipInput = document.getElementById('customer-zip') as HTMLInputElement | null;
+
+  interface FieldConfig {
+    name: 'name' | 'email' | 'phone' | 'zip' | 'serviceType';
+    input: HTMLInputElement | HTMLSelectElement | null;
+    errorEl: HTMLElement | null;
+  }
+
+  const fields: FieldConfig[] = [
+    { name: 'name', input: nameInput, errorEl: document.getElementById('customer-name-error') },
+    { name: 'email', input: emailInput, errorEl: document.getElementById('customer-email-error') },
+    { name: 'phone', input: phoneInput, errorEl: document.getElementById('customer-phone-error') },
+    { name: 'zip', input: zipInput, errorEl: document.getElementById('customer-zip-error') },
+    { name: 'serviceType', input: serviceSelect, errorEl: document.getElementById('service-type-error') },
+  ];
+
+  const touchedFields = new Set<string>();
+
+  function setFieldVisualState(fieldItem: FieldConfig, errorMessage: string | null) {
+    const { input, errorEl } = fieldItem;
+    if (!input || !errorEl) return;
+
+    if (errorMessage) {
+      input.setAttribute('aria-invalid', 'true');
+      input.classList.remove('border-neutral-300', 'focus:border-[#1ba1e2]', 'focus:ring-[#1ba1e2]/20');
+      input.classList.add('border-red-500', 'focus:border-red-500', 'focus:ring-red-500/20');
+      errorEl.textContent = errorMessage;
+      errorEl.classList.remove('hidden');
+    } else {
+      input.setAttribute('aria-invalid', 'false');
+      input.classList.remove('border-red-500', 'focus:border-red-500', 'focus:ring-red-500/20');
+      input.classList.add('border-neutral-300', 'focus:border-[#1ba1e2]', 'focus:ring-[#1ba1e2]/20');
+      errorEl.textContent = '';
+      errorEl.classList.add('hidden');
+    }
+  }
+
+  function getFormDataValues() {
+    return {
+      name: nameInput?.value || '',
+      email: emailInput?.value || '',
+      phone: phoneInput?.value || '',
+      zip: zipInput?.value || '',
+      serviceType: serviceSelect?.value || '',
+    };
+  }
+
+  function updateSubmitButtonState() {
+    if (!submitBtn) return;
+    const values = getFormDataValues();
+    const canSubmit = isQuoteFormCompleteAndValid(values);
+    submitBtn.disabled = !canSubmit;
+  }
+
+  // Handle phone auto-formatting
+  phoneInput?.addEventListener('input', () => {
+    phoneInput.value = formatPhoneNumber(phoneInput.value);
+    if (touchedFields.has('phone')) {
+      const err = validateField('phone', phoneInput.value);
+      const phoneItem = fields.find((f) => f.name === 'phone');
+      if (phoneItem) setFieldVisualState(phoneItem, err);
+    }
+    updateSubmitButtonState();
+  });
+
+  // Handle ZIP code numeric-only restriction
+  zipInput?.addEventListener('input', () => {
+    zipInput.value = sanitizeZip(zipInput.value);
+    if (touchedFields.has('zip')) {
+      const err = validateField('zip', zipInput.value);
+      const zipItem = fields.find((f) => f.name === 'zip');
+      if (zipItem) setFieldVisualState(zipItem, err);
+    }
+    updateSubmitButtonState();
+  });
+
+  // Attach blur and live input/change listeners for each field
+  fields.forEach((fieldItem) => {
+    const { name, input } = fieldItem;
+    if (!input) return;
+
+    input.addEventListener('blur', () => {
+      touchedFields.add(name);
+      const err = validateField(name, input.value);
+      setFieldVisualState(fieldItem, err);
+      updateSubmitButtonState();
+    });
+
+    if (name !== 'phone' && name !== 'zip') {
+      input.addEventListener('input', () => {
+        if (touchedFields.has(name)) {
+          const err = validateField(name, input.value);
+          setFieldVisualState(fieldItem, err);
+        }
+        updateSubmitButtonState();
+      });
+    }
+
+    if (name === 'serviceType') {
+      input.addEventListener('change', () => {
+        if (touchedFields.has(name)) {
+          const err = validateField(name, input.value);
+          setFieldVisualState(fieldItem, err);
+        }
+        updateSubmitButtonState();
+      });
+    }
+  });
+
+  // Initial button state evaluation on page load
+  updateSubmitButtonState();
+
   document.querySelectorAll('[data-service-link]').forEach((el) => {
     el.addEventListener('click', (e) => {
       e.preventDefault();
@@ -160,6 +298,10 @@ import { siteConfig } from '../data/siteConfig.js';
       const resolvedService = resolveServiceType(rawService);
       if (serviceSelect && resolvedService) {
         serviceSelect.value = resolvedService;
+        touchedFields.add('serviceType');
+        const serviceItem = fields.find((f) => f.name === 'serviceType');
+        if (serviceItem) setFieldVisualState(serviceItem, null);
+        updateSubmitButtonState();
       }
       if (contactSection) {
         contactSection.scrollIntoView({ behavior: 'smooth' });
@@ -172,34 +314,47 @@ import { siteConfig } from '../data/siteConfig.js';
     e.preventDefault();
     if (!form || !errorBox || !successBox) return;
 
+    const values = getFormDataValues();
     const formData = new FormData(form);
-    const name = String(formData.get('name') || '');
-    const email = String(formData.get('email') || '');
-    const phone = String(formData.get('phone') || '');
-    const zip = String(formData.get('zip') || '');
-    const serviceType = String(formData.get('serviceType') || '');
     const accessKey = String(formData.get('access_key') || '');
     const botcheck = formData.get('botcheck') !== null;
 
-    const validation = validateQuoteRequest({ name, email, phone, zip, serviceType });
+    const validation = validateQuoteRequest(values);
 
     if (!validation.valid) {
       successBox.classList.add('hidden');
       errorBox.innerHTML = validation.errors.map((err) => `<div>• ${err}</div>`).join('');
       errorBox.classList.remove('hidden');
+
+      let firstInvalidInput: HTMLElement | null = null;
+      fields.forEach((fieldItem) => {
+        touchedFields.add(fieldItem.name);
+        const err = validation.fieldErrors[fieldItem.name] || null;
+        setFieldVisualState(fieldItem, err);
+        if (err && !firstInvalidInput && fieldItem.input) {
+          firstInvalidInput = fieldItem.input;
+        }
+      });
+
+      if (firstInvalidInput) {
+        (firstInvalidInput as HTMLElement).focus();
+        (firstInvalidInput as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      updateSubmitButtonState();
       return;
     }
 
     errorBox.classList.add('hidden');
     successBox.classList.add('hidden');
 
-    const defaultBtnText = submitBtn?.textContent || 'Send to Our Family Dispatch';
+    const defaultBtnText = submitBtn?.textContent || 'Send Request to Dan & Staff';
     if (submitBtn) {
       submitBtn.disabled = true;
       submitBtn.textContent = 'Sending...';
     }
 
-    const payload = buildWeb3FormsPayload({ name, email, phone, zip, serviceType, botcheck }, accessKey);
+    const payload = buildWeb3FormsPayload({ ...values, botcheck }, accessKey);
     const result = await submitQuoteToWeb3Forms(payload);
 
     if (submitBtn) {
@@ -215,5 +370,10 @@ import { siteConfig } from '../data/siteConfig.js';
 
     successBox.classList.remove('hidden');
     form.reset();
+    touchedFields.clear();
+    fields.forEach((fieldItem) => {
+      setFieldVisualState(fieldItem, null);
+    });
+    updateSubmitButtonState();
   });
 </script>

@@ -95,13 +95,84 @@ describe('2. Interactive Carousel, Touch-Swipe & Quote Form Logic (uiLogic.js)',
       siteConfig.heroSlides.map((s) => ({ ctaHref: s.ctaHref, serviceType: resolveServiceType(s.serviceType) })),
       [
         { ctaHref: '#contact', serviceType: 'service' },
-        { ctaHref: '#contact', serviceType: 'service' },
+        { ctaHref: '#contact', serviceType: 'maintenance' },
         { ctaHref: '#contact', serviceType: 'installation' },
       ]
     );
   });
 
-  it('validates the quote request form including email address', async () => {
+  it('formats phone numbers into ###-###-#### format', async () => {
+    const { formatPhoneNumber } = await import('../src/utils/uiLogic.js');
+
+    assert.equal(formatPhoneNumber(''), '');
+    assert.equal(formatPhoneNumber('774'), '774');
+    assert.equal(formatPhoneNumber('774238'), '774-238');
+    assert.equal(formatPhoneNumber('7742380557'), '774-238-0557');
+    assert.equal(formatPhoneNumber('(774) 238-0557'), '774-238-0557');
+    assert.equal(formatPhoneNumber('77423805579999'), '774-238-0557');
+  });
+
+  it('sanitizes zip codes to 5 numeric digits', async () => {
+    const { sanitizeZip } = await import('../src/utils/uiLogic.js');
+
+    assert.equal(sanitizeZip(''), '');
+    assert.equal(sanitizeZip('02760'), '02760');
+    assert.equal(sanitizeZip('02760-1234'), '02760');
+    assert.equal(sanitizeZip('abc02760xyz'), '02760');
+  });
+
+  it('validates individual form fields correctly via validateField', async () => {
+    const { validateField } = await import('../src/utils/uiLogic.js');
+
+    assert.equal(validateField('name', 'J'), 'Please enter your full name.');
+    assert.equal(validateField('name', 'Jane'), null);
+    assert.equal(validateField('email', 'bad'), 'Please enter a valid email address.');
+    assert.equal(validateField('email', 'jane@example.com'), null);
+    assert.equal(validateField('phone', '123'), 'Please enter a valid 10-digit phone number.');
+    assert.equal(validateField('phone', '774-238-0557'), null);
+    assert.equal(validateField('zip', '027'), 'Please enter a valid 5-digit ZIP code.');
+    assert.equal(validateField('zip', '02760'), null);
+    assert.equal(validateField('serviceType', ''), 'Please select a service type.');
+    assert.equal(validateField('serviceType', 'service'), null);
+  });
+
+  it('evaluates quote form completeness and validity for submit button state', async () => {
+    const { isQuoteFormCompleteAndValid } = await import('../src/utils/uiLogic.js');
+
+    assert.equal(isQuoteFormCompleteAndValid(null), false);
+    assert.equal(
+      isQuoteFormCompleteAndValid({
+        name: '',
+        email: 'jane@example.com',
+        phone: '774-238-0557',
+        zip: '02760',
+        serviceType: 'service',
+      }),
+      false
+    );
+    assert.equal(
+      isQuoteFormCompleteAndValid({
+        name: 'Jane Homeowner',
+        email: 'invalid-email',
+        phone: '774-238-0557',
+        zip: '02760',
+        serviceType: 'service',
+      }),
+      false
+    );
+    assert.equal(
+      isQuoteFormCompleteAndValid({
+        name: 'Jane Homeowner',
+        email: 'jane@example.com',
+        phone: '774-238-0557',
+        zip: '02760',
+        serviceType: 'service',
+      }),
+      true
+    );
+  });
+
+  it('validates the quote request form including email address and returns fieldErrors', async () => {
     const { validateQuoteRequest } = await import('../src/utils/uiLogic.js');
 
     const invalidResult = validateQuoteRequest({
@@ -113,6 +184,11 @@ describe('2. Interactive Carousel, Touch-Swipe & Quote Form Logic (uiLogic.js)',
     });
     assert.equal(invalidResult.valid, false);
     assert.ok(invalidResult.errors.length >= 4);
+    assert.ok(invalidResult.fieldErrors.name);
+    assert.ok(invalidResult.fieldErrors.email);
+    assert.ok(invalidResult.fieldErrors.phone);
+    assert.ok(invalidResult.fieldErrors.zip);
+    assert.ok(invalidResult.fieldErrors.serviceType);
 
     const validResult = validateQuoteRequest({
       name: 'Jane Homeowner',
@@ -123,6 +199,7 @@ describe('2. Interactive Carousel, Touch-Swipe & Quote Form Logic (uiLogic.js)',
     });
     assert.equal(validResult.valid, true);
     assert.equal(validResult.errors.length, 0);
+    assert.deepEqual(validResult.fieldErrors, {});
   });
 
   it('builds Web3Forms payload with dynamic subject, from_name, email, and botcheck honeypot', async () => {
@@ -256,6 +333,13 @@ describe('3. Dan McKay Heating & Cooling Astro Components & Assets', () => {
     assert.ok(contact.includes('name="access_key"'), 'ContactQuote should include Web3Forms access_key field');
     assert.ok(contact.includes('name="botcheck"'), 'ContactQuote should include Web3Forms honeypot field');
     assert.ok(contact.includes('submitQuoteToWeb3Forms'), 'ContactQuote should submit via Web3Forms helper');
+    assert.ok(contact.includes('id="customer-name-error"'), 'ContactQuote should include inline error element for name');
+    assert.ok(contact.includes('id="customer-email-error"'), 'ContactQuote should include inline error element for email');
+    assert.ok(contact.includes('id="customer-phone-error"'), 'ContactQuote should include inline error element for phone');
+    assert.ok(contact.includes('id="customer-zip-error"'), 'ContactQuote should include inline error element for zip');
+    assert.ok(contact.includes('id="service-type-error"'), 'ContactQuote should include inline error element for service type');
+    assert.ok(contact.includes('aria-describedby="customer-name-error"'), 'ContactQuote should bind aria-describedby to name input');
+    assert.ok(contact.includes('quote-submit-btn') && contact.includes('disabled'), 'ContactQuote submit button should start disabled');
 
     const footer = fs.readFileSync(path.join(rootDir, 'src/components/Footer.astro'), 'utf-8');
     assert.ok(
