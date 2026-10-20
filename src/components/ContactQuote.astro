@@ -10,7 +10,7 @@ import { siteConfig } from '../data/siteConfig.js';
           Need Heating or Cooling Service?
         </h2>
         <p class="mt-2 text-base text-neutral-600">
-          As a new customer, Dan and his staff are here to help! <span class="font-semibold text-[#e06336]">No service fees - just our hourly rate.</span>
+          As a new customer, Dan and his staff are here to help! <span class="font-semibold text-[#e06336]">No service fees - just our hourly rate.*</span>
         </p>
       </div>
 
@@ -152,6 +152,12 @@ import { siteConfig } from '../data/siteConfig.js';
 
       <p class="mt-5 text-center text-sm text-neutral-600">
         Or call <a href={siteConfig.phoneHref} class="font-bold text-[#e06336] underline">{siteConfig.phoneDisplay}</a> directly for dependable service.
+      </p>
+
+      <!-- After-Hours / Emergency Service Fee Fine-Print Footnote -->
+      <p class="mt-6 text-center text-xs text-neutral-500 leading-relaxed">
+        <strong class="font-semibold text-neutral-600">*{siteConfig.serviceFeeDisclaimer.title}:</strong>{' '}
+        {siteConfig.serviceFeeDisclaimer.body}
       </p>
     </div>
   </div>

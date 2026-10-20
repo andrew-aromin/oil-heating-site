@@ -41,6 +41,8 @@ describe('1. Dan McKay Heating & Cooling Configuration & Flyer Content Model (si
     // About section configuration
     assert.ok(siteConfig.about, 'Should include about section configuration');
     assert.equal(siteConfig.about.image, '/images/img1.jpg', 'About section should use /images/img1.jpg');
+    assert.equal(siteConfig.about.experienceBadge, 'Over 30 Years Of Experience', 'About section should include experience badge');
+    assert.ok(siteConfig.about.paragraphs[0].includes('over 30 years'), 'About lead paragraph should emphasize 30+ years experience');
     assert.ok(siteConfig.about.paragraphs.length >= 2, 'About section should include filler bio paragraphs');
     assert.equal(siteConfig.about.ctaHref, '/#contact', 'About CTA should link back to /#contact');
 
@@ -57,6 +59,15 @@ describe('1. Dan McKay Heating & Cooling Configuration & Flyer Content Model (si
     assert.equal(siteConfig.services.length, 3, 'Should include the 3 core heating & cooling services');
     const serviceIds = siteConfig.services.map((s) => s.id);
     assert.deepEqual(serviceIds, ['service', 'installation', 'maintenance']);
+
+    // After-Hours / Emergency Service Fee Disclaimer & Asterisks
+    assert.equal(siteConfig.serviceFeeDisclaimer.title, 'After-Hours / Emergency Service Fee');
+    assert.ok(
+      siteConfig.serviceFeeDisclaimer.body.includes('An additional service fee applies to service calls requested outside our regular business hours'),
+      'Should include the after-hours service fee disclaimer body'
+    );
+    assert.equal(siteConfig.heroSlides[1].headline, 'No Service Fees - Just Our Hourly Rate*');
+    assert.ok(siteConfig.services[0].description.includes('No service fees - just our hourly rate.*'));
   });
 });
 
@@ -322,9 +333,12 @@ describe('3. Dan McKay Heating & Cooling Astro Components & Assets', () => {
     assert.ok(services.includes('grid-cols-1') && services.includes('md:grid-cols-3'), 'Services should stack 1-col on mobile and 3-col on md+');
     assert.ok(services.includes('bg-[#e06336]'), 'Services should include the flyer orange service strip');
     assert.ok(services.includes('family.') && services.includes('comfort'), 'Services should include the bottom flyer tagline');
+    assert.ok(services.includes('siteConfig.serviceFeeDisclaimer'), 'Services should render the service fee disclaimer footnote');
     assert.ok(!services.includes('<ul'), 'Minimal Services cards should not contain cluttered bullet lists');
 
     const contact = fs.readFileSync(path.join(rootDir, 'src/components/ContactQuote.astro'), 'utf-8');
+    assert.ok(contact.includes('No service fees - just our hourly rate.*'), 'ContactQuote should include asterisk on service fee highlight');
+    assert.ok(contact.includes('siteConfig.serviceFeeDisclaimer'), 'ContactQuote should render the service fee disclaimer footnote');
     assert.ok(contact.includes('id="quote-form"'), 'ContactQuote should include interactive form');
     assert.ok(contact.includes('max-w-xl mx-auto'), 'ContactQuote should be a centered single-column container');
     assert.ok(contact.includes('id="customer-email"') && contact.includes('name="email"'), 'ContactQuote should include email input field');
@@ -365,5 +379,7 @@ describe('3. Dan McKay Heating & Cooling Astro Components & Assets', () => {
     assert.ok(aboutComponent.includes('lg:grid-cols-12'), 'About.astro should use a two-column split grid on desktop');
     assert.ok(aboutComponent.includes('<figcaption'), 'About.astro should render a photo caption');
     assert.ok(aboutComponent.includes('max-w-prose'), 'About.astro should constrain line width for easy reading');
+    assert.ok(aboutComponent.includes('about.experienceBadge'), 'About.astro should render the experience badge');
+    assert.ok(aboutComponent.includes('bg-[#e06336]'), 'About.astro should style the experience badge with brand orange');
   });
 });

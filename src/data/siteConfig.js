@@ -16,19 +16,25 @@ export const siteConfig = {
 
   valueProposition: {
     lead: 'Honest Service. Fair Pricing. Reliable Comfort for our oil heat and cooling customers. As a new customer, Dan and his staff are here to help!',
-    highlight: 'No service fees - just our hourly rate.',
+    highlight: 'No service fees - just our hourly rate.*',
     body: 'We understand homeownership can come with unexpected expenses. That is why we provide dependable service, clear and honest communication without adding unnecessary costs.',
     banner: 'Heating & Air Conditioning Installation • Service & Maintenance',
   },
 
+  serviceFeeDisclaimer: {
+    title: 'After-Hours / Emergency Service Fee',
+    body: 'An additional service fee applies to service calls requested outside our regular business hours, including evenings, weekends, and holidays. The applicable fee will be communicated to the customer before service is authorized.',
+  },
+
   about: {
     eyebrow: 'Dan McKay Heating & Cooling',
+    experienceBadge: 'Over 30 Years Of Experience',
     heading: 'Meet Dan McKay and His Staff',
     image: '/images/img1.jpg',
     imageAlt: 'Dan McKay Heating & Cooling family and dogs outside their home',
     imageCaption: 'Treating our oil heat and cooling customers like family.',
     paragraphs: [
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+      'With over 30 years of hands-on experience in oil heating and cooling, Dan McKay and his staff are dedicated to delivering dependable service, fair pricing, and honest craftsmanship to every home we serve.',
       'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
       'Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida.',
     ],
@@ -49,7 +55,7 @@ export const siteConfig = {
     },
     {
       id: 'slide-pricing',
-      headline: 'No Service Fees - Just Our Hourly Rate',
+      headline: 'No Service Fees - Just Our Hourly Rate*',
       subheadline: 'Dependable service, clear and honest communication without adding unnecessary costs.',
       image: '/images/img2.jpg',
       imageAlt: 'Honest oil burner and cooling service technician',
@@ -73,7 +79,7 @@ export const siteConfig = {
     {
       id: 'service',
       title: 'Oil Burner & Cooling Repair',
-      description: 'No service fees - just our hourly rate. Dependable diagnostics and honest repairs for oil burners and AC systems.',
+      description: 'No service fees - just our hourly rate.* Dependable diagnostics and honest repairs for oil burners and AC systems.',
     },
     {
       id: 'installation',
