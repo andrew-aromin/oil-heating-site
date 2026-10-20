@@ -5,6 +5,7 @@ export const siteConfig = {
   familyMotto: 'As a small business, we treat our customers like family. Your comfort matters to us!',
   phoneDisplay: '774-238-0557',
   phoneHref: 'tel:+17742380557',
+  businessHours: 'Mon–Fri: 8:30am – 5:00pm',
   web3FormsAccessKey: '89911d31-d3c5-4f46-8bdd-68e23d758358',
 
   navLinks: [

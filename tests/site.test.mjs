@@ -15,6 +15,7 @@ describe('1. Dan McKay Heating & Cooling Configuration & Flyer Content Model (si
     assert.equal(siteConfig.logo, '/images/logo.jpg', 'Logo should reference /images/logo.jpg');
     assert.equal(siteConfig.phoneDisplay, '774-238-0557', 'Phone display should match base.jpeg');
     assert.equal(siteConfig.phoneHref, 'tel:+17742380557', 'phoneHref should be a valid tel: link');
+    assert.equal(siteConfig.businessHours, 'Mon–Fri: 8:30am – 5:00pm', 'Should configure business hours');
     assert.ok(siteConfig.familyMotto.includes('family'), 'Family motto should reflect treating customers like family');
     assert.ok(
       siteConfig.valueProposition.highlight.includes('No service fees - just our hourly rate.'),
@@ -360,6 +361,7 @@ describe('3. Dan McKay Heating & Cooling Astro Components & Assets', () => {
       footer.includes('flex-col') && footer.includes('md:flex-row'),
       'Footer should stack cleanly on mobile and form a single compact bar on desktop'
     );
+    assert.ok(footer.includes('siteConfig.businessHours'), 'Footer should render business hours');
     assert.ok(footer.includes('bg-black'), 'Footer should use black background');
   });
 
