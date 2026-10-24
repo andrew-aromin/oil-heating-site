@@ -6,7 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://andrew-aromin.github.io',
-  base: '/oil-heating-site',
+  base: '/dmckaycomfort',
   output: 'static',
   vite: {
     plugins: [tailwindcss()]

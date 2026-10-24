@@ -263,14 +263,14 @@ describe('2. Interactive Carousel, Touch-Swipe & Quote Form Logic (uiLogic.js)',
   it('prefixes root-relative image and navigation paths with baseUrl via withBase()', async () => {
     const { withBase } = await import('../src/utils/uiLogic.js');
 
-    assert.equal(withBase('/images/img1.jpg', '/oil-heating-site'), '/oil-heating-site/images/img1.jpg');
-    assert.equal(withBase('/images/img1.jpg', '/oil-heating-site/'), '/oil-heating-site/images/img1.jpg');
-    assert.equal(withBase('/about', '/oil-heating-site'), '/oil-heating-site/about');
-    assert.equal(withBase('/#services', '/oil-heating-site'), '/oil-heating-site/#services');
-    assert.equal(withBase('/', '/oil-heating-site'), '/oil-heating-site/');
+    assert.equal(withBase('/images/img1.jpg', '/dmckaycomfort'), '/dmckaycomfort/images/img1.jpg');
+    assert.equal(withBase('/images/img1.jpg', '/dmckaycomfort/'), '/dmckaycomfort/images/img1.jpg');
+    assert.equal(withBase('/about', '/dmckaycomfort'), '/dmckaycomfort/about');
+    assert.equal(withBase('/#services', '/dmckaycomfort'), '/dmckaycomfort/#services');
+    assert.equal(withBase('/', '/dmckaycomfort'), '/dmckaycomfort/');
     assert.equal(withBase('/images/img1.jpg', '/'), '/images/img1.jpg');
-    assert.equal(withBase('#contact', '/oil-heating-site'), '#contact');
-    assert.equal(withBase('tel:+17742380557', '/oil-heating-site'), 'tel:+17742380557');
+    assert.equal(withBase('#contact', '/dmckaycomfort'), '#contact');
+    assert.equal(withBase('tel:+17742380557', '/dmckaycomfort'), 'tel:+17742380557');
   });
 });
 
