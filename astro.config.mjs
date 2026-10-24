@@ -1,13 +1,13 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
-
+import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://andrew-aromin.github.io',
-  base: '/dmckaycomfort',
+  site: process.env.CF_PAGES_URL || 'https://dmckaycomfort.com',
   output: 'static',
+  integrations: [react()],
   vite: {
     plugins: [tailwindcss()]
   }
